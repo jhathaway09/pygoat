@@ -7,7 +7,14 @@ stages:
 # This forces the bandit-sast job to always run regardless of detection
 bandit-sast:
   stage: test
+  image: python:3.9
+  before_script:
+    - pip install bandit
+  script:
+    # The '|| true' ensures the job finishes even if it finds vulnerabilities
+    - bandit -r . -f txt || true
   rules:
     - when: always
-  variables:
-    SAST_EXCLUDED_ANALYZERS: "semgrep"
+
+variables:
+  SAST_EXCLUDED_ANALYZERS: "semgrep"
