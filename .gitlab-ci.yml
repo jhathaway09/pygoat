@@ -2,4 +2,4 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 variables:
-  SAST_EXCLUDED_ANALYZERS: "semgrep"
+  SAST_EXCLUDED_ANALYZERS: ""
