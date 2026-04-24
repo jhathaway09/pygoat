@@ -1,6 +1,13 @@
 include:
   - template: Security/SAST.gitlab-ci.yml
 
-variables:
-  SAST_EXCLUDED_ANALYZERS: ""
-  SECURE_LOG_LEVEL: "debug"
+stages:
+  - test
+
+# This forces the bandit-sast job to always run regardless of detection
+bandit-sast:
+  stage: test
+  rules:
+    - when: always
+  variables:
+    SAST_EXCLUDED_ANALYZERS: "semgrep"
