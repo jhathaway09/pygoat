@@ -7,15 +7,13 @@ bandit-sast:
   before_script:
     - pip install bandit
   script:
-    # This runs the scan AND saves it to a file named bandit-report.txt
-    # '|| true' ensures the pipeline stays green even with vulnerabilities
-    - bandit -r . -f txt -o bandit-report.txt || true
-    # This also prints the results to the GitLab console so you can see them immediately
-    - cat bandit-report.txt
+    # This creates a file named like: bandit-report-1234567.txt
+    - bandit -r . -f txt -o bandit-report-$CI_JOB_ID.txt
   artifacts:
     when: always
     paths:
-      - bandit-report.txt
+      # Use a wildcard (*) so GitLab finds the file regardless of the ID number
+      - bandit-report-*.txt
     expire_in: 1 week
   rules:
     - when: always
