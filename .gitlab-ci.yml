@@ -1,20 +1,21 @@
-include:
-  - template: Security/SAST.gitlab-ci.yml
-
 stages:
   - test
 
-# This forces the bandit-sast job to always run regardless of detection
 bandit-sast:
   stage: test
   image: python:3.9
   before_script:
     - pip install bandit
   script:
-    # The '|| true' ensures the job finishes even if it finds vulnerabilities
-    - bandit -r . -f txt || true
+    # This runs the scan AND saves it to a file named bandit-report.txt
+    # '|| true' ensures the pipeline stays green even with vulnerabilities
+    - bandit -r . -f txt -o bandit-report.txt || true
+    # This also prints the results to the GitLab console so you can see them immediately
+    - cat bandit-report.txt
+  artifacts:
+    when: always
+    paths:
+      - bandit-report.txt
+    expire_in: 1 week
   rules:
     - when: always
-
-variables:
-  SAST_EXCLUDED_ANALYZERS: "semgrep"
