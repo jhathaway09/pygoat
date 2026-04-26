@@ -7,12 +7,14 @@ bandit-sast:
   before_script:
     - pip install bandit
   script:
-    # This creates a file named like: bandit-report-1234567.txt
-    - bandit -r . -f txt -o bandit-report-$CI_JOB_ID.txt
+    # We use a subshell or a variable to ensure the report prints even if Bandit fails
+    - bandit -r . -f txt -o bandit-report-$CI_JOB_ID.txt || EXIT_CODE=$?
+    - cat bandit-report-$CI_JOB_ID.txt
+    # This line manually fails the job if Bandit found something (exit code wasn't 0)
+    - if [ "$EXIT_CODE" -ne 0 ]; then exit $EXIT_CODE; fi
   artifacts:
     when: always
     paths:
-      # Use a wildcard (*) so GitLab finds the file regardless of the ID number
       - bandit-report-*.txt
     expire_in: 1 week
   rules:
